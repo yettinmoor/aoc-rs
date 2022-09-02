@@ -19,7 +19,7 @@ impl Run for Runner {
                     .neighbors(coord, false)
                     .iter()
                     .all(|&(_, n)| n > x)
-                    .then(|| x + 1)
+                    .then_some(x + 1)
             })
             .sum()
     }
@@ -46,7 +46,7 @@ impl Run for Runner {
                                 .neighbors(coord, false)
                                 .iter()
                                 .filter_map(|&(c, v)| {
-                                    (v > input.get_coord(coord).unwrap()).then(|| c)
+                                    (v > input.get_coord(coord).unwrap()).then_some(c)
                                 })
                                 .collect::<Vec<_>>()
                         },

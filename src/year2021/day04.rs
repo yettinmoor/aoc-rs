@@ -96,7 +96,7 @@ impl Board {
             .iter()
             .flatten()
             .zip(self.marked.iter().flatten())
-            .filter_map(|(num, marked)| marked.not().then(|| num))
+            .filter_map(|(num, marked)| marked.not().then_some(num))
             .sum::<usize>()
             * self.last_draw
     }

@@ -32,7 +32,7 @@ where
         self.flat_iter().map(|(_, v)| v).collect()
     }
 
-    fn values_mut<'a>(&'a mut self) -> Vec<&'a mut Self::Item> {
+    fn values_mut(&mut self) -> Vec<&mut Self::Item> {
         self.flat_iter_mut().map(|(_, v)| v).collect()
     }
 }

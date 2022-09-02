@@ -37,17 +37,11 @@ impl Run for Runner {
         for j in 0..input[0].len() {
             if oxy.len() > 1 {
                 let most_common_jth_bit = most_common(&oxy.transpose()[j]);
-                oxy = oxy
-                    .into_iter()
-                    .filter(|row| row[j] == most_common_jth_bit)
-                    .collect();
+                oxy.retain(|row| row[j] == most_common_jth_bit);
             }
             if co2.len() > 1 {
                 let most_common_jth_bit = most_common(&co2.transpose()[j]);
-                co2 = co2
-                    .into_iter()
-                    .filter(|row| row[j] != most_common_jth_bit)
-                    .collect();
+                co2.retain(|row| row[j] != most_common_jth_bit);
             }
             if oxy.len() == 1 && co2.len() == 1 {
                 break;

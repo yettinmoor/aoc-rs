@@ -1,53 +1,79 @@
-use std::collections::HashSet;
-use std::iter::repeat_with;
-
-use crate::common::matrix::Matrix;
 use crate::common::run::Run;
-use crate::matrix_input;
+use crate::vec_input;
 
 pub struct Runner {}
 
-impl Run for Runner {
-    matrix_input!(usize);
-    type Output = usize;
-
-    fn part1(&self, input: &Self::Input) -> Self::Output {
-        let mut input = input.clone();
-        (0..100).map(|_| step(&mut input)).sum()
-    }
-
-    fn part2(&self, input: &Self::Input) -> Self::Output {
-        let mut input = input.clone();
-        let size = input.size();
-        repeat_with(|| step(&mut input))
-            .take_while(|&flashes| flashes < size)
-            .count()
-            + 1
+fn closer(c: char) -> char {
+    match c {
+        '(' => ')',
+        '[' => ']',
+        '{' => '}',
+        '<' => '>',
+        _ => unreachable!(),
     }
 }
 
-fn step(nodes: &mut Vec<Vec<usize>>) -> usize {
-    for v in nodes.values_mut().into_iter() {
-        *v += 1;
+impl Run for Runner {
+    vec_input!(String);
+    type Output = usize;
+
+    fn part1(&self, input: &Self::Input) -> Self::Output {
+        input
+            .iter()
+            .map(|line| {
+                let mut stack = vec![];
+                line.chars()
+                    .find_map(|c| match c {
+                        '(' | '[' | '{' | '<' => {
+                            stack.push(c);
+                            None
+                        }
+                        ')' | ']' | '}' | '>' => {
+                            if let Some(last) = stack.pop() {
+                                (c != closer(last)).then_some(c)
+                            } else {
+                                Some(c)
+                            }
+                        }
+                        _ => unreachable!(),
+                    })
+                    .map(|c| match c {
+                        ')' => 3,
+                        ']' => 57,
+                        '}' => 1197,
+                        '>' => 25137,
+                        _ => unreachable!(),
+                    })
+                    .unwrap_or(0)
+            })
+            .sum::<usize>()
     }
-    let mut flashed = HashSet::new();
-    loop {
-        let flash_queue = nodes
-            .flat_iter()
-            .filter_map(|(c, v)| (v > 9 && !flashed.contains(&c)).then(|| c))
+
+    fn part2(&self, input: &Self::Input) -> Self::Output {
+        let mut scores = input
+            .iter()
+            .filter_map(|line| {
+                let mut stack = vec![];
+                for c in line.chars() {
+                    match c {
+                        '(' | '[' | '{' | '<' => {
+                            stack.push(c);
+                        }
+                        ')' | ']' | '}' | '>' => {
+                            if c != closer(stack.pop()?) {
+                                return None;
+                            }
+                        }
+                        _ => unreachable!(),
+                    }
+                }
+                let score = stack.iter().rev().fold(0, |acc, &cur| {
+                    acc * 5 + " )]}>".chars().position(|c| c == closer(cur)).unwrap()
+                });
+                Some(score)
+            })
             .collect::<Vec<_>>();
-        if flash_queue.is_empty() {
-            break;
-        }
-        for flasher in flash_queue {
-            flashed.insert(flasher);
-            for (c, _) in nodes.neighbors(flasher, true) {
-                *nodes.get_coord_mut(c).unwrap() += 1;
-            }
-        }
+        scores.sort();
+        scores[scores.len() / 2]
     }
-    for &c in flashed.iter() {
-        *nodes.get_coord_mut(c).unwrap() = 0;
-    }
-    flashed.len()
 }

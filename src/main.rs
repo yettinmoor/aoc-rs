@@ -13,5 +13,6 @@ fn main() {
     solve!(year2021, day07, 328262, 90040997);
     solve!(year2021, day08, 440, 1046281);
     solve!(year2021, day09, 541, 847504);
-    solve!(year2021, day10, 1617, 258);
+    solve!(year2021, day10, 367059, 1952146692);
+    solve!(year2021, day11, 1617, 258);
 }

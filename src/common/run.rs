@@ -15,7 +15,8 @@ pub trait Run {
         expected1: Option<Self::Output>,
         expected2: Option<Self::Output>,
     ) {
-        let input_file = format!("input/{}/{}.txt", year, day);
+        let input_dir = std::env::var("AOC_INPUT_DIR").unwrap_or_else(|_| "input".to_string());
+        let input_file = format!("{}/{}/{}.txt", input_dir, year, day);
         let input = std::fs::read_to_string(&input_file)
             .unwrap_or_else(|_| panic!("could not open file {}", &input_file));
         let parsed = self.parse(&input);

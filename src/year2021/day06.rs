@@ -27,7 +27,7 @@ fn solve(xs: &[usize], n: usize) -> usize {
         let zeroes = *xs.get(&0).unwrap_or(&0);
         Some(
             xs.iter()
-                .filter_map(|(&k, &v)| (k != 0).then(|| (k - 1, v)))
+                .filter_map(|(&k, &v)| (k != 0).then_some((k - 1, v)))
                 .chain(once((6, zeroes)))
                 .chain(once((8, zeroes)))
                 .counter_sum(),
